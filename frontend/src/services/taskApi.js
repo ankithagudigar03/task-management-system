@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api/tasks";
+const API_URL = "https://task-management-system-1-yy1p.onrender.com/api/tasks";
 
 // Get all tasks
 export const getTasks = async (params = {}) => {
