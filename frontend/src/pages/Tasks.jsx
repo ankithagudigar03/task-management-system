@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import TaskList from "../components/TaskList";
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
+import TaskForm from "../components/TaskForm";
+import TaskDetails from "../components/TaskDetails";
+import TaskSummary from "../components/TaskSummary";
+import EmptyTasks from "../components/EmptyTasks";
 import { useTaskContext } from "../context/TaskContext";
 
+
 function Tasks() {
+
     const {
         tasks,
         loading,
@@ -14,15 +20,20 @@ function Tasks() {
         removeTask
     } = useTaskContext();
 
-    const navigate = useNavigate();
+    const [showAddTask, setShowAddTask] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [editingTask, setEditingTask] = useState(null);
 
     const [queryParams, setQueryParams] = useState({});
+
 
     useEffect(() => {
         fetchTasks();
     }, []);
 
+
     const handleSearch = (search) => {
+
         const updatedParams = {
             ...queryParams,
             search
@@ -36,93 +47,259 @@ function Tasks() {
         fetchTasks(updatedParams);
     };
 
+
     const handleFilter = (filters) => {
+
         const updatedParams = {
             ...queryParams
         };
 
         Object.keys(filters).forEach((key) => {
+
             if (filters[key]) {
                 updatedParams[key] = filters[key];
             } else {
                 delete updatedParams[key];
             }
+
         });
 
         setQueryParams(updatedParams);
         fetchTasks(updatedParams);
     };
 
-    const handleEdit = (task) => {
-        navigate("/tasks/new", {
-            state: {
-                editingTask: task
-            }
-        });
+
+    const handleViewTask = (task) => {
+        setSelectedTask(task);
     };
+
+
+    const handleEdit = (task) => {
+        setEditingTask(task);
+    };
+
 
     const handleDelete = async (id) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this task?"
-        );
 
-        if (!confirmed) {
-            return;
+    const confirmed = window.confirm(
+        "Are you sure you want to delete this task?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        await removeTask(id);
+
+        // Refresh the current filtered/search results
+        await fetchTasks(queryParams);
+
+        if (selectedTask?._id === id) {
+            setSelectedTask(null);
         }
 
-        await removeTask(id);
-    };
+    } catch (error) {
+        console.error(error);
+    }
+};
 
     return (
         <div className="tasks-page">
 
-            {/* MY TASKS HEADER */}
+
+            {/* HEADER */}
+
             <header className="header-minimal">
+
                 <div className="minimal-header-content">
 
-                    <h2>My Tasks</h2>
+                    <div className="brand">
 
-              <nav className="header-nav">
-            <button onClick={() => navigate("/tasks/new")}>
-                Add Task
-            </button>
+                        <div className="brand-icon">
+    <img src="/task-header.png" alt="My Tasks" />
+</div>
 
-            <button onClick={() => navigate("/tasks")}>
-                My Tasks
-            </button>
-        </nav>
+                        <div>
+                            <h1>My Tasks</h1>
+                            <p>Stay organized and get more done</p>
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        className="add-task-button"
+                        onClick={() => setShowAddTask(true)}
+                    >
+                        + Add Task
+                    </button>
 
                 </div>
+
             </header>
 
-            <main className="dashboard-content">
 
-                <section className="task-controls">
-                    <SearchBar onSearch={handleSearch} />
-                    <FilterBar onFilter={handleFilter} />
-                </section>
+            {/* MAIN */}
 
-                {loading && (
-                    <p className="loading">
-                        Loading tasks...
-                    </p>
-                )}
+          <main className="dashboard-content">
 
-                {error && (
-                    <p className="error">
-                        {error}
-                    </p>
-                )}
+    <TaskSummary tasks={tasks} />
 
-                {!loading && (
-                    <TaskList
-                        tasks={tasks}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                    />
-                )}
+    <SearchBar
+        onSearch={handleSearch}
+    />
+
+    <FilterBar
+        onFilter={handleFilter}
+    />
+
+{loading && tasks.length === 0 && (
+    <div className="loading-state">
+
+        <div className="loading-spinner"></div>
+
+        <h3>Loading tasks...</h3>
+
+        <p>Fetching your tasks</p>
+
+    </div>
+)}
+
+{error && (
+    <p className="error">
+        {error}
+    </p>
+)}
+
+{tasks.length > 0 ? (
+    <TaskList
+        tasks={tasks}
+        onView={handleViewTask}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+    />
+) : (
+    !loading && (
+        <EmptyTasks
+            onAddTask={() => setShowAddTask(true)}
+        />
+    )
+)}
 
             </main>
+
+
+            {/* ADD TASK */}
+
+            {showAddTask && (
+
+                <div
+                    className="modal-overlay"
+                    onClick={() => setShowAddTask(false)}
+                >
+
+                    <div
+                        className="task-modal"
+                        onClick={(event) =>
+                            event.stopPropagation()
+                        }
+                    >
+
+                        <button
+                            type="button"
+                            className="modal-close"
+                            onClick={() =>
+                                setShowAddTask(false)
+                            }
+                        >
+                            ×
+                        </button>
+
+                        <TaskForm
+    editingTask={null}
+    onCancelEdit={() =>
+        setShowAddTask(false)
+    }
+    onTaskSaved={() =>
+        fetchTasks(queryParams)
+    }
+/>
+                    </div>
+
+                </div>
+
+            )}
+
+
+            {/* EDIT TASK */}
+
+            {editingTask && (
+
+                <div
+                    className="modal-overlay"
+                    onClick={() => setEditingTask(null)}
+                >
+
+                    <div
+                        className="task-modal"
+                        onClick={(event) =>
+                            event.stopPropagation()
+                        }
+                    >
+
+                        <button
+                            type="button"
+                            className="modal-close"
+                            onClick={() =>
+                                setEditingTask(null)
+                            }
+                        >
+                            ×
+                        </button>
+
+                       <TaskForm
+    editingTask={editingTask}
+    onCancelEdit={() =>
+        setEditingTask(null)
+    }
+    onTaskSaved={() =>
+        fetchTasks(queryParams)
+    }
+/>
+
+                    </div>
+
+                </div>
+
+            )}
+
+
+            {/* TASK DETAILS */}
+
+            {selectedTask && (
+
+                <div
+                    className="task-details-overlay"
+                    onClick={() =>
+                        setSelectedTask(null)
+                    }
+                >
+
+
+                        <TaskDetails
+                            task={selectedTask}
+                            onClose={() =>
+                                setSelectedTask(null)
+                            }
+                        />
+
+                    </div>
+
+                
+
+            )}
 
         </div>
     );

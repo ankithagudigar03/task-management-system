@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTaskContext } from "../context/TaskContext";
-
-function TaskForm({ editingTask, onCancelEdit }) {
+function TaskForm({
+    editingTask,
+    onCancelEdit,
+    onTaskSaved
+}) {
     const { addTask, editTask } = useTaskContext();
-    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         title: "",
@@ -48,106 +49,165 @@ function TaskForm({ editingTask, onCancelEdit }) {
         }));
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-        if (!formData.title.trim()) {
-            return;
+    if (!formData.title.trim()) {
+        return;
+    }
+
+    try {
+        if (editingTask) {
+            await editTask(editingTask._id, formData);
+        } else {
+            await addTask(formData);
         }
 
-        try {
-            if (editingTask) {
-                await editTask(editingTask._id, formData);
-
-                navigate("/tasks");
-            } else {
-                await addTask(formData);
-
-                setFormData({
-                    title: "",
-                    description: "",
-                    status: "TODO",
-                    priority: "MEDIUM",
-                    assignedTo: "",
-                    dueDate: ""
-                });
-
-                navigate("/tasks");
-            }
-        } catch (error) {
-            console.error(error);
+        // Refresh task list immediately
+        if (onTaskSaved) {
+            await onTaskSaved();
         }
-    };
+
+        // Close popup after saving
+        onCancelEdit();
+
+    } catch (error) {
+        console.error(error);
+    }
+};
 
     return (
         <form className="task-form" onSubmit={handleSubmit}>
-            <h2>{editingTask ? "Edit Task" : "Add New Task"}</h2>
 
-            <input
-                type="text"
-                name="title"
-                placeholder="Task title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-            />
+            <h2>
+                {editingTask ? "Edit Task" : "Add New Task"}
+            </h2>
 
-            <textarea
-                name="description"
-                placeholder="Task description"
-                value={formData.description}
-                onChange={handleChange}
-            />
 
-            <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-            >
-                <option value="TODO">TODO</option>
-                <option value="IN PROGRESS">IN PROGRESS</option>
-                <option value="COMPLETED">COMPLETED</option>
-            </select>
+{/* TASK TITLE */}
+            <div className="form-field">
 
-            <select
-                name="priority"
-                value={formData.priority}
-                onChange={handleChange}
-            >
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HIGH">HIGH</option>
-            </select>
+                <span className="form-field-icon">
+                    🏷️
+                </span>
 
-            <input
-                type="text"
-                name="assignedTo"
-                placeholder="Assigned to"
-                value={formData.assignedTo}
-                onChange={handleChange}
-            />
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Task title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                />
 
-            <input
-                type="date"
-                name="dueDate"
-                value={formData.dueDate}
-                onChange={handleChange}
-            />
+            </div>
+
+
+            {/* TASK DESCRIPTION */}
+            <div className="form-field textarea-field">
+
+                <span className="form-field-icon">
+                    📄
+                </span>
+
+                <textarea
+                    name="description"
+                    placeholder="Task description"
+                    value={formData.description}
+                    onChange={handleChange}
+                />
+
+            </div>
+
+
+
+
+           <div className={`form-field status-field ${formData.status.toLowerCase().replace(" ", "-")}`}>
+    <span className="form-field-icon">
+        {formData.status === "TODO" && "📋"}
+        {formData.status === "IN PROGRESS" && "⚙️"}
+        {formData.status === "COMPLETED" && "✅"}
+    </span>
+
+    <select
+        name="status"
+        value={formData.status}
+        onChange={handleChange}
+    >
+        <option value="TODO">TODO</option>
+        <option value="IN PROGRESS">IN PROGRESS</option>
+        <option value="COMPLETED">COMPLETED</option>
+    </select>
+</div>
+
+
+
+
+<div className={`form-field priority-field ${formData.priority.toLowerCase()}`}>
+    <span className="form-field-icon">
+        {formData.priority === "LOW" && "🟢"}
+        {formData.priority === "MEDIUM" && "🟡"}
+        {formData.priority === "HIGH" && "🔴"}
+    </span>
+
+    <select
+        name="priority"
+        value={formData.priority}
+        onChange={handleChange}
+    >
+        <option value="LOW">LOW</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="HIGH">HIGH</option>
+    </select>
+</div>
+
+
+
+<div className="form-field">
+    <span className="form-field-icon">👤</span>
+
+
+    <input
+        type="text"
+        name="assignedTo"
+        placeholder="Assigned to"
+        value={formData.assignedTo}
+        onChange={handleChange}
+    />
+</div>
+
+            
+            <div className="form-field date-field">
+
+    <span
+        className="form-field-icon calendar-icon"
+        onClick={(e) =>
+            e.currentTarget.nextElementSibling.showPicker()
+        }
+    >
+        📅
+    </span>
+
+    <input
+        type="date"
+        name="dueDate"
+        value={formData.dueDate}
+        onChange={handleChange}
+    />
+
+</div>
+
 
             <div className="form-actions">
+
                 <button type="submit">
                     {editingTask ? "Update Task" : "Add Task"}
                 </button>
 
-                {editingTask && (
-                    <button
-                        type="button"
-                        onClick={onCancelEdit}
-                    >
-                        Cancel
-                    </button>
-                )}
+    
+
             </div>
+
         </form>
     );
 }

@@ -4,37 +4,88 @@ function TaskDetails({ task, onClose }) {
     }
 
     return (
-        <div className="task-details-overlay">
-            <div className="task-details">
+        <div className="task-details">
+
+            {/* Header */}
+            <div className="task-details-header">
+
+                <div className="details-title">
+                   <span
+    className={`details-task-icon status-${task.status
+        .toLowerCase()
+        .replace(" ", "-")}`}
+>
+    {task.status === "TODO" && "📋"}
+
+    {task.status === "IN PROGRESS" && "⚙️"}
+
+    {task.status === "COMPLETED" && "✓"}
+</span>
+                    <div>
+                        <h2>{task.title}</h2>
+
+                        <span
+                            className={`priority ${task.priority.toLowerCase()}`}
+                        >
+                            {task.priority}
+                        </span>
+                    </div>
+                </div>
+
                 <button
                     className="close-button"
                     onClick={onClose}
+                    aria-label="Close"
                 >
                     ×
                 </button>
 
-                <div className="task-details-header">
-                    <h2>{task.title}</h2>
+            </div>
 
-                    <span
-                        className={`priority ${task.priority.toLowerCase()}`}
-                    >
-                        {task.priority}
+            {/* Description */}
+            <div className="details-section">
+
+                <h3>
+                    📝 Description
+                </h3>
+
+                <div className="description-box">
+                    {task.description || "No description"}
+                </div>
+
+            </div>
+
+            {/* Task Information */}
+            <div className="details-grid">
+
+                <div className="detail-item">
+
+    <span
+        className={`detail-icon status-icon status-${task.status
+            .toLowerCase()
+            .replace(" ", "-")}`}
+    >
+        {task.status === "TODO" && "📋"}
+
+        {task.status === "IN PROGRESS" && "⚙️"}
+
+        {task.status === "COMPLETED" && "✓"}
+    </span>
+
+    <div>
+        <strong>Status</strong>
+
+        <span className="status-value">
+            {task.status}
+        </span>
+    </div>
+
+</div>
+
+                <div className="detail-item">
+                    <span className="detail-icon">
+                        👤
                     </span>
-                </div>
-
-                <div className="details-section">
-                    <h3>Description</h3>
-                    <p>
-                        {task.description || "No description"}
-                    </p>
-                </div>
-
-                <div className="details-grid">
-                    <div>
-                        <strong>Status</strong>
-                        <span>{task.status}</span>
-                    </div>
 
                     <div>
                         <strong>Assigned To</strong>
@@ -42,6 +93,12 @@ function TaskDetails({ task, onClose }) {
                             {task.assignedTo || "Not assigned"}
                         </span>
                     </div>
+                </div>
+
+                <div className="detail-item">
+                    <span className="detail-icon">
+                        📅
+                    </span>
 
                     <div>
                         <strong>Due Date</strong>
@@ -53,6 +110,12 @@ function TaskDetails({ task, onClose }) {
                                 : "No due date"}
                         </span>
                     </div>
+                </div>
+
+                <div className="detail-item">
+                    <span className="detail-icon">
+                        🕐
+                    </span>
 
                     <div>
                         <strong>Created</strong>
@@ -64,6 +127,12 @@ function TaskDetails({ task, onClose }) {
                                 : "-"}
                         </span>
                     </div>
+                </div>
+
+                <div className="detail-item">
+                    <span className="detail-icon">
+                        🔄
+                    </span>
 
                     <div>
                         <strong>Last Updated</strong>
@@ -77,13 +146,13 @@ function TaskDetails({ task, onClose }) {
                     </div>
                 </div>
 
-                <button
-                    className="close-details"
-                    onClick={onClose}
-                >
-                    Back to Tasks
-                </button>
             </div>
+<button
+    className="close-details"
+    onClick={onClose}
+>
+    ← Back to Tasks
+</button>
         </div>
     );
 }

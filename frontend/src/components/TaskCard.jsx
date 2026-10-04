@@ -1,62 +1,153 @@
-import { useNavigate } from "react-router-dom";
+function TaskCard({ task, onView, onEdit, onDelete }) {
 
-function TaskCard({ task, onEdit, onDelete }) {
-    const navigate = useNavigate();
+    const handleCardClick = () => {
+        onView(task);
+    };
 
-    const handleTaskClick = () => {
-        navigate(`/tasks/${task._id}`);
+    // STATUS ICON
+    const getStatusIcon = () => {
+        if (task.status === "TODO") {
+            return "📋";
+        }
+
+        if (task.status === "IN PROGRESS") {
+            return "⚙️";
+        }
+
+        if (task.status === "COMPLETED") {
+            return "✓";
+        }
+
+        return "📋";
+    };
+
+    // STATUS CLASS
+    const getStatusClass = () => {
+        if (task.status === "TODO") {
+            return "todo";
+        }
+
+        if (task.status === "IN PROGRESS") {
+            return "in-progress";
+        }
+
+        if (task.status === "COMPLETED") {
+            return "completed";
+        }
+
+        return "todo";
     };
 
     return (
-        <div className="task-card">
-            <div
-                className="task-card-header"
-                onClick={handleTaskClick}
-                style={{ cursor: "pointer" }}
-            >
-                <h3>{task.title}</h3>
+        <div
+            className="task-card"
+            onClick={handleCardClick}
+        >
 
-                <span className={`priority ${task.priority.toLowerCase()}`}>
+            {/* HEADER */}
+            <div className="task-card-header">
+
+                <div className="task-title-area">
+
+                    <div className={`task-icon ${getStatusClass()}`}>
+                        {getStatusIcon()}
+                    </div>
+
+                    <div className="task-title-content">
+
+                        <h3>
+                            {task.title}
+                        </h3>
+
+                        <p className="task-description">
+                            {task.description || "No description"}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {/* PRIORITY */}
+                <span
+                    className={`priority ${task.priority.toLowerCase()}`}
+                >
                     {task.priority}
                 </span>
+
             </div>
 
-            <p className="task-description">
-                {task.description}
-            </p>
 
+            {/* TASK INFORMATION */}
             <div className="task-info">
-                <span>
-                    Status: {task.status}
-                </span>
 
                 <span>
-                    Assigned to: {task.assignedTo || "Not assigned"}
+                    <span className="info-icon status-info-icon">
+                        {getStatusIcon()}
+                    </span>
+
+                    <span>
+                        Status: {task.status}
+                    </span>
                 </span>
+
+
+                <span>
+                    <span className="info-icon assigned-info-icon">
+                        👤
+                    </span>
+
+                    <span>
+                        Assigned to: {task.assignedTo || "Not assigned"}
+                    </span>
+                </span>
+
 
                 {task.dueDate && (
                     <span>
-                        Due:{" "}
-                        {new Date(task.dueDate).toLocaleDateString()}
+                        <span className="info-icon date-info-icon">
+                            📅
+                        </span>
+
+                        <span>
+                            Due:{" "}
+                            {new Date(
+                                task.dueDate
+                            ).toLocaleDateString()}
+                        </span>
                     </span>
                 )}
+
             </div>
 
-            <div className="task-actions">
-    <button
-        className="edit-button"
-        onClick={() => onEdit(task)}
-    >
-        Edit
-    </button>
 
-    <button
-        className="delete-button"
-        onClick={() => onDelete(task._id)}
-    >
-        Delete
-    </button>
-</div>
+            {/* BUTTONS */}
+            <div className="task-actions">
+
+                <button
+                    type="button"
+                    className="edit-button"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onEdit(task);
+                    }}
+                >
+                    🖊️ Edit
+                </button>
+
+
+                <button
+                    type="button"
+                    className="delete-button"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onDelete(task._id);
+                    }}
+                >
+                    🗑 Delete
+                </button>
+
+            </div>
+
         </div>
     );
 }

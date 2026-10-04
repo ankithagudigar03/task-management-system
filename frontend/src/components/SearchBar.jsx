@@ -10,11 +10,21 @@ function SearchBar({ onSearch }) {
         onSearch(value);
     };
 
+    const clearSearch = () => {
+        setSearch("");
+        onSearch("");
+    };
+
     return (
         <div className="search-bar">
+
+            <span className="search-icon">
+                🔍
+            </span>
+
             <input
                 type="text"
-                placeholder="Search tasks..."
+                placeholder="Search your tasks..."
                 value={search}
                 onChange={handleChange}
             />
@@ -22,14 +32,14 @@ function SearchBar({ onSearch }) {
             {search && (
                 <button
                     type="button"
-                    onClick={() => {
-                        setSearch("");
-                        onSearch("");
-                    }}
+                    className="search-clear"
+                    onClick={clearSearch}
+                    aria-label="Clear search"
                 >
-                    Clear
+                    ×
                 </button>
             )}
+
         </div>
     );
 }
