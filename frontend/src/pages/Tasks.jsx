@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import TaskList from "../components/TaskList";
 import SearchBar from "../components/SearchBar";
@@ -13,6 +14,8 @@ import { logoutUser } from "../utils/auth";
 
 function Tasks() {
 
+    const navigate = useNavigate();
+
     const {
         tasks,
         loading,
@@ -23,7 +26,7 @@ function Tasks() {
 
     const handleLogout = () => {
     logoutUser();
-    window.location.href = "/login";
+    navigate("/login");
 };
 
     const [showAddTask, setShowAddTask] = useState(false);
