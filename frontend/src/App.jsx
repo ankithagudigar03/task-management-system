@@ -1,4 +1,5 @@
 import "./styles/task.css";
+
 import {
     BrowserRouter,
     Routes,
@@ -6,24 +7,37 @@ import {
     Navigate
 } from "react-router-dom";
 
-import Tasks from "./pages/Tasks";
+import { lazy, Suspense } from "react";
+
+import Loading from "./components/Loading";
+
+
+// Lazy loaded page
+const Tasks = lazy(() => import("./pages/Tasks"));
+
 
 function App() {
     return (
         <BrowserRouter>
-            <Routes>
 
-                <Route
-                    path="/"
-                    element={<Tasks />}
-                />
+            <Suspense fallback={<Loading />}>
 
-                <Route
-                    path="*"
-                    element={<Navigate to="/" />}
-                />
+                <Routes>
 
-            </Routes>
+                    <Route
+                        path="/"
+                        element={<Tasks />}
+                    />
+
+                    <Route
+                        path="*"
+                        element={<Navigate to="/" />}
+                    />
+
+                </Routes>
+
+            </Suspense>
+
         </BrowserRouter>
     );
 }

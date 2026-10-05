@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import TaskList from "../components/TaskList";
 import SearchBar from "../components/SearchBar";
@@ -26,10 +26,6 @@ function Tasks() {
 
     const [queryParams, setQueryParams] = useState({});
 
-
-    useEffect(() => {
-        fetchTasks();
-    }, []);
 
 
     const handleSearch = (search) => {
@@ -168,9 +164,26 @@ function Tasks() {
 )}
 
 {error && (
-    <p className="error">
-        {error}
-    </p>
+    <div className="error-message">
+
+        <div className="error-icon">
+            ⚠️
+        </div>
+
+        <div className="error-content">
+            <h3>Something went wrong</h3>
+
+            <p>{error}</p>
+
+            <button
+                type="button"
+                onClick={() => fetchTasks(queryParams)}
+            >
+                ↻ Try Again
+            </button>
+        </div>
+
+    </div>
 )}
 
 {tasks.length > 0 ? (
