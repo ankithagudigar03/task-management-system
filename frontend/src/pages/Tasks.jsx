@@ -8,6 +8,7 @@ import TaskDetails from "../components/TaskDetails";
 import TaskSummary from "../components/TaskSummary";
 import EmptyTasks from "../components/EmptyTasks";
 import { useTaskContext } from "../context/TaskContext";
+import { logoutUser } from "../utils/auth";
 
 
 function Tasks() {
@@ -19,6 +20,11 @@ function Tasks() {
         fetchTasks,
         removeTask
     } = useTaskContext();
+
+    const handleLogout = () => {
+    logoutUser();
+    window.location.href = "/login";
+};
 
     const [showAddTask, setShowAddTask] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
@@ -124,14 +130,54 @@ function Tasks() {
                     </div>
 
 
-                    <button
-                        type="button"
-                        className="add-task-button"
-                        onClick={() => setShowAddTask(true)}
-                    >
-                        + Add Task
-                    </button>
+                     <div className="header-actions">
 
+                        <button
+                            type="button"
+                            className="add-task-button"
+                            onClick={() => setShowAddTask(true)}
+                        >
+                            + Add Task
+                        </button>
+
+                        <button
+    type="button"
+    className="logout-button"
+    onClick={handleLogout}
+>
+    <svg
+        className="logout-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path
+            d="M10 17L15 12L10 7"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+
+        <path
+            d="M15 12H3"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+        />
+
+        <path
+            d="M21 3V21"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+        />
+    </svg>
+
+    Logout
+</button>
+
+                    </div>
                 </div>
 
             </header>

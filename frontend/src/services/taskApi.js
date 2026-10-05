@@ -1,11 +1,30 @@
-const API_URL = "https://task-management-system-1-yy1p.onrender.com/api/tasks";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/tasks`;
 
-// Get all tasks
+
+// =========================
+// GET TOKEN
+// =========================
+
+const getToken = () => {
+    return localStorage.getItem("token");
+};
+
+
+// =========================
+// GET ALL TASKS
+// =========================
+
 export const getTasks = async (params = {}) => {
+
     const query = new URLSearchParams(params).toString();
 
     const response = await fetch(
-        `${API_URL}${query ? `?${query}` : ""}`
+        `${API_URL}${query ? `?${query}` : ""}`,
+        {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
     );
 
     if (!response.ok) {
@@ -15,9 +34,21 @@ export const getTasks = async (params = {}) => {
     return response.json();
 };
 
-// Get one task
+
+// =========================
+// GET ONE TASK
+// =========================
+
 export const getTaskById = async (id) => {
-    const response = await fetch(`${API_URL}/${id}`);
+
+    const response = await fetch(
+        `${API_URL}/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    );
 
     if (!response.ok) {
         throw new Error("Failed to fetch task");
@@ -26,13 +57,22 @@ export const getTaskById = async (id) => {
     return response.json();
 };
 
-// Create task
+
+// =========================
+// CREATE TASK
+// =========================
+
 export const createTask = async (task) => {
+
     const response = await fetch(API_URL, {
+
         method: "POST",
+
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`
         },
+
         body: JSON.stringify(task)
     });
 
@@ -43,15 +83,26 @@ export const createTask = async (task) => {
     return response.json();
 };
 
-// Update task
+
+// =========================
+// UPDATE TASK
+// =========================
+
 export const updateTask = async (id, task) => {
-    const response = await fetch(`${API_URL}/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(task)
-    });
+
+    const response = await fetch(
+        `${API_URL}/${id}`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getToken()}`
+            },
+
+            body: JSON.stringify(task)
+        }
+    );
 
     if (!response.ok) {
         throw new Error("Failed to update task");
@@ -60,11 +111,23 @@ export const updateTask = async (id, task) => {
     return response.json();
 };
 
-// Delete task
+
+// =========================
+// DELETE TASK
+// =========================
+
 export const deleteTask = async (id) => {
-    const response = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE"
-    });
+
+    const response = await fetch(
+        `${API_URL}/${id}`,
+        {
+            method: "DELETE",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    );
 
     if (!response.ok) {
         throw new Error("Failed to delete task");

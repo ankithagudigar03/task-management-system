@@ -1,4 +1,7 @@
 import "./styles/task.css";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import {
     BrowserRouter,
@@ -22,19 +25,33 @@ function App() {
 
             <Suspense fallback={<Loading />}>
 
-                <Routes>
+                 <Routes>
 
-                    <Route
-                        path="/"
-                        element={<Tasks />}
+              <Route
+                path="/"
+                element={
+                    <ProtectedRoute>
+                        <Tasks />
+                    </ProtectedRoute>
+                }
+            />
+
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
+
+              <Route
+                        path="/register"
+                        element={<Register />}
                     />
 
-                    <Route
-                        path="*"
-                        element={<Navigate to="/" />}
-                    />
+                <Route
+                    path="*"
+                    element={<Navigate to="/" />}
+                />
 
-                </Routes>
+            </Routes>
 
             </Suspense>
 

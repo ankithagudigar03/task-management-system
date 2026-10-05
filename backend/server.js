@@ -3,8 +3,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const taskRoutes = require("./routes/taskRoutes");
+const authRoutes = require("./routes/authRoutes");
 const notFoundMiddleware = require("./middleware/notFoundMiddleware");
 const errorMiddleware = require("./middleware/errorMiddleware");
+
 
 dotenv.config();
 
@@ -16,6 +18,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/tasks", taskRoutes);//routes
+app.use("/api/auth", authRoutes);
 
 //Error Handling
 app.use(notFoundMiddleware);

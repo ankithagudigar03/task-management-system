@@ -2475,3 +2475,505 @@ body {
 
 
 
+
+
+
+
+/* =========================================================
+   AUTHENTICATION PAGES
+========================================================= */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+
+    /* Background image */
+    background:
+        linear-gradient(
+            rgba(15, 23, 42, 0.65),
+            rgba(30, 41, 59, 0.75)
+        ),
+        url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=2000&q=80");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/* =========================================================
+   AUTH CARD
+========================================================= */
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+
+    padding: 40px;
+
+    border-radius: 24px;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.25);
+
+    animation: authCardAppear 0.5s ease;
+}
+
+
+/* Card animation */
+
+@keyframes authCardAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.auth-card h1 {
+    margin: 0;
+
+    text-align: center;
+
+    font-size: 32px;
+    font-weight: 800;
+
+    color: #172033;
+
+    letter-spacing: -0.5px;
+}
+
+
+.auth-subtitle {
+    margin: 10px 0 30px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.auth-field {
+    margin-bottom: 20px;
+}
+
+
+.auth-field label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #334155;
+}
+
+
+.auth-field input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 14px 16px;
+
+    border: 2px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    color: #172033;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.auth-field input::placeholder {
+    color: #94a3b8;
+}
+
+
+.auth-field input:hover {
+    background: #ffffff;
+}
+
+
+.auth-field input:focus {
+    background: #ffffff;
+
+    border-color: #6366f1;
+
+    box-shadow:
+        0 0 0 4px rgba(99, 102, 241, 0.12);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   LOGIN / REGISTER BUTTON
+========================================================= */
+
+.auth-button {
+    width: 100%;
+
+    margin-top: 8px;
+
+    padding: 14px 20px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #6366f1,
+        #4f46e5
+    );
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+
+    box-shadow:
+        0 8px 20px rgba(79, 70, 229, 0.3);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+
+.auth-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 26px rgba(79, 70, 229, 0.4);
+
+    filter: brightness(1.05);
+}
+
+
+.auth-button:active {
+    transform: translateY(0);
+
+    box-shadow:
+        0 5px 12px rgba(79, 70, 229, 0.25);
+}
+
+
+.auth-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   ERROR MESSAGE
+========================================================= */
+
+.auth-error {
+    margin-bottom: 18px;
+
+    padding: 13px 15px;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #fff1f2,
+        #ffe4e6
+    );
+
+    border: 1px solid #fecdd3;
+
+    color: #be123c;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    animation: messageAppear 0.25s ease;
+}
+
+
+/* =========================================================
+   SUCCESS MESSAGE
+========================================================= */
+
+.auth-success {
+    margin-bottom: 18px;
+
+    padding: 13px 15px;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #ecfdf5,
+        #d1fae5
+    );
+
+    border: 1px solid #a7f3d0;
+
+    color: #047857;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    animation: messageAppear 0.25s ease;
+}
+
+
+@keyframes messageAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   LOGIN ↔ REGISTER LINK
+========================================================= */
+
+.auth-switch {
+    margin-top: 25px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+
+.auth-switch a {
+    margin-left: 4px;
+
+    color: #4f46e5;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+
+.auth-switch a:hover {
+    color: #312e81;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   LOGOUT BUTTON
+========================================================= */
+
+.logout-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: 0;
+    border-radius: 10px;
+
+    padding: 11px 18px;
+
+    color: white;
+    background: #e5484d;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 7px 18px rgba(229, 72, 77, 0.25);
+
+    transition: all 0.2s ease;
+}
+
+.logout-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.logout-button:hover {
+    background: #d9363e;
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 9px 20px rgba(229, 72, 77, 0.35);
+}
+
+
+.logout-button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================
+   HEADER ACTIONS
+========================= */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+
+
+/* =========================
+   LOGIN INPUT ICONS
+========================= */
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+
+    width: 18px;
+    height: 18px;
+
+    color: #64748b;
+
+    pointer-events: none;
+
+    transition: color 0.2s ease;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding-left: 46px;
+}
+
+.input-with-icon:focus-within .input-icon {
+    color: #5665df;
+}
+
+
+.mail-icon {
+    color: #454da4;
+    font-size: 20px;
+}
+
+.lock-icon {
+    width: 18px;
+    height: 18px;
+}
+
+
+.input-with-icon {
+    position: relative;
+    width: 100%;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-size: 20px;
+    line-height: 1;
+
+    z-index: 2;
+    pointer-events: none;
+}
+
+.input-with-icon input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 46px;
+}
+/* =========================================================
+   MOBILE RESPONSIVE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .auth-page {
+        padding: 18px;
+    }
+
+    .auth-card {
+        padding: 28px 22px;
+
+        border-radius: 20px;
+    }
+
+    .auth-card h1 {
+        font-size: 27px;
+    }
+
+    .auth-button {
+        padding: 13px;
+    }
+}
