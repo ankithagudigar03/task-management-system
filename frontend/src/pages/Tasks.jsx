@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import TaskList from "../components/TaskList";
 import SearchBar from "../components/SearchBar";
@@ -10,68 +10,111 @@ import TaskSummary from "../components/TaskSummary";
 import EmptyTasks from "../components/EmptyTasks";
 import { useTaskContext } from "../context/TaskContext";
 import { logoutUser } from "../utils/auth";
+import Analytics from "./Analytics";
+import AdminDashboard from "./AdminDashboard";
+
 
 
 function Tasks() {
 
     const navigate = useNavigate();
 
-    const {
-        tasks,
-        loading,
-        error,
-        fetchTasks,
-        removeTask
-    } = useTaskContext();
+       const {
+            tasks,
+            loading,
+            error,
+            currentPage,
+            totalPages,
+            totalTasks,
+            taskStats,
+            fetchTasks,
+            removeTask
+        } = useTaskContext();
 
     const handleLogout = () => {
     logoutUser();
     navigate("/login");
-};
 
+};
+    
+
+    const [showAnalytics, setShowAnalytics] = useState(false);
+    const [showAdmin, setShowAdmin] = useState(false);
     const [showAddTask, setShowAddTask] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [editingTask, setEditingTask] = useState(null);
 
     const [queryParams, setQueryParams] = useState({});
+    const [pageGroup, setPageGroup] = useState(0);
 
 
 
-    const handleSearch = (search) => {
+            const handleSearch = (search) => {
 
-        const updatedParams = {
-            ...queryParams,
-            search
+            const updatedParams = {
+                ...queryParams,
+                search,
+                page: 1
+            };
+
+            if (!search) {
+                delete updatedParams.search;
+            }
+
+            setPageGroup(0);
+            setQueryParams(updatedParams);
+            fetchTasks(updatedParams);
         };
-
-        if (!search) {
-            delete updatedParams.search;
-        }
-
-        setQueryParams(updatedParams);
-        fetchTasks(updatedParams);
-    };
-
 
     const handleFilter = (filters) => {
 
-        const updatedParams = {
-            ...queryParams
-        };
-
-        Object.keys(filters).forEach((key) => {
-
-            if (filters[key]) {
-                updatedParams[key] = filters[key];
-            } else {
-                delete updatedParams[key];
-            }
-
-        });
-
-        setQueryParams(updatedParams);
-        fetchTasks(updatedParams);
+    const updatedParams = {
+        ...queryParams,
+        page: 1
     };
+
+    Object.keys(filters).forEach((key) => {
+
+        if (filters[key]) {
+            updatedParams[key] = filters[key];
+        } else {
+            delete updatedParams[key];
+        }
+
+    });
+
+    setPageGroup(0);
+    setQueryParams(updatedParams);
+    fetchTasks(updatedParams);
+};
+
+
+const token = localStorage.getItem("token");
+
+let isAdmin = false;
+
+if (token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        isAdmin = payload.role === "ADMIN";
+    } catch (error) {
+        console.error("Invalid token");
+    }
+}
+
+
+
+const handlePageChange = (page) => {
+    const updatedParams = {
+        ...queryParams,
+        page
+    };
+
+    setQueryParams(updatedParams);
+    fetchTasks(updatedParams);
+};
+
+
 
 
     const handleViewTask = (task) => {
@@ -122,8 +165,8 @@ function Tasks() {
                     <div className="brand">
 
                         <div className="brand-icon">
-    <img src="/task-header.png" alt="My Tasks" />
-</div>
+                    <img src="/task-header.png" alt="My Tasks" />
+                </div>
 
                         <div>
                             <h1>My Tasks</h1>
@@ -134,6 +177,25 @@ function Tasks() {
 
 
                      <div className="header-actions">
+
+
+              {isAdmin && (
+                        <button
+                            type="button"
+                            className="admin-dashboard-link"
+                            onClick={() => setShowAdmin(true)}
+                        >
+                            Admin Dashboard
+                        </button>
+                    )}
+
+                    <button
+                        className="analytics-button"
+                        onClick={() => setShowAnalytics(true)}
+                    >
+                        📊 Analytics
+                    </button>
+
 
                         <button
                             type="button"
@@ -190,7 +252,7 @@ function Tasks() {
 
           <main className="dashboard-content">
 
-    <TaskSummary tasks={tasks} />
+    <TaskSummary taskStats={taskStats} />
 
     <SearchBar
         onSearch={handleSearch}
@@ -249,6 +311,82 @@ function Tasks() {
         />
     )
 )}
+
+
+
+
+{totalPages > 1 && (
+    <div className="pagination">
+
+        {/* Previous page */}
+        <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => {
+                const previousPage = currentPage - 1;
+
+                // If going from 11 → 10, show pages 1–10
+                if (previousPage % 10 === 0) {
+                    setPageGroup(Math.floor((previousPage - 1) / 10));
+                }
+
+                handlePageChange(previousPage);
+            }}
+        >
+            ← Previous
+        </button>
+
+        {/* Page numbers */}
+        {Array.from(
+            {
+                length: Math.min(
+                    10,
+                    totalPages - pageGroup * 10
+                )
+            },
+            (_, index) => {
+                const pageNumber = pageGroup * 10 + index + 1;
+
+                return (
+                    <button
+                        key={pageNumber}
+                        type="button"
+                        className={
+                            currentPage === pageNumber
+                                ? "active"
+                                : ""
+                        }
+                        onClick={() =>
+                            handlePageChange(pageNumber)
+                        }
+                    >
+                        {pageNumber}
+                    </button>
+                );
+            }
+        )}
+
+        {/* Next page */}
+        <button
+            type="button"
+            disabled={currentPage === totalPages}
+            onClick={() => {
+                const nextPage = currentPage + 1;
+
+                // If going from 10 → 11, show pages 11–20
+                if (nextPage % 10 === 1) {
+                    setPageGroup(Math.floor((nextPage - 1) / 10));
+                }
+
+                handlePageChange(nextPage);
+            }}
+        >
+            Next →
+        </button>
+
+    </div>
+)}
+
 
             </main>
 
@@ -362,6 +500,40 @@ function Tasks() {
                 
 
             )}
+
+
+            {showAnalytics && (
+    <div className="analytics-overlay">
+        <div className="analytics-modal">
+
+            <button
+                className="analytics-close"
+                onClick={() => setShowAnalytics(false)}
+            >
+                ✕
+            </button>
+
+            <Analytics />
+
+        </div>
+    </div>
+)}
+
+
+{showAdmin && (
+    <div className="admin-overlay">
+        <div className="admin-modal">
+            <button
+                className="admin-close"
+                onClick={() => setShowAdmin(false)}
+            >
+                ✕
+            </button>
+
+            <AdminDashboard />
+        </div>
+    </div>
+)}
 
         </div>
     );

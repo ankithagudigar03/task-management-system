@@ -137,3 +137,62 @@ export const deleteTask = async (id) => {
 
     return response.json();
 };
+
+
+export const getTaskStats = async () => {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/tasks/stats`,
+        {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch task statistics");
+    }
+
+    return response.json();
+};
+
+
+
+
+
+export const getTaskAnalytics = async () => {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/tasks/analytics`,
+        {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch task analytics");
+    }
+
+    return response.json();
+};
+
+
+
+
+export const getAdminStats = async () => {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/stats`,
+        {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch admin statistics");
+    }
+
+    return response.json();
+};

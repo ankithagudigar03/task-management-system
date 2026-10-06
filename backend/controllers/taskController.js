@@ -1,6 +1,8 @@
+const mongoose = require("mongoose");
 const Task = require("../models/Task");
 
 // Get all tasks - only logged-in user's tasks
+// Get tasks - only logged-in user's tasks + pagination
 const getTasks = async (req, res) => {
     try {
         const {
@@ -8,8 +10,15 @@ const getTasks = async (req, res) => {
             status,
             priority,
             assignedTo,
-            dueDate
+            dueDate,
+            page = 1,
+            limit = 12
         } = req.query;
+
+        const currentPage = Math.max(Number(page), 1);
+        const tasksPerPage = Math.max(Number(limit), 1);
+
+        const skip = (currentPage - 1) * tasksPerPage;
 
         // Only get tasks belonging to logged-in user
         let filter = {
@@ -49,10 +58,19 @@ const getTasks = async (req, res) => {
             filter.dueDate = dueDate;
         }
 
-        const tasks = await Task.find(filter)
-            .sort({ updatedAt: -1 });
+        const totalTasks = await Task.countDocuments(filter);
 
-        res.status(200).json(tasks);
+        const tasks = await Task.find(filter)
+            .sort({ updatedAt: -1 })
+            .skip(skip)
+            .limit(tasksPerPage);
+
+        res.status(200).json({
+            tasks,
+            currentPage,
+            totalPages: Math.ceil(totalTasks / tasksPerPage),
+            totalTasks
+        });
 
     } catch (error) {
         res.status(500).json({
@@ -60,7 +78,6 @@ const getTasks = async (req, res) => {
         });
     }
 };
-
 
 // Get one task - only if it belongs to logged-in user
 const getTaskById = async (req, res) => {
@@ -165,10 +182,94 @@ const deleteTask = async (req, res) => {
 };
 
 
+const getTaskStats = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const total = await Task.countDocuments({
+            user: userId
+        });
+
+        const todo = await Task.countDocuments({
+            user: userId,
+            status: "TODO"
+        });
+
+        const inProgress = await Task.countDocuments({
+            user: userId,
+            status: "IN PROGRESS"
+        });
+
+        const completed = await Task.countDocuments({
+            user: userId,
+            status: "COMPLETED"
+        });
+
+        res.status(200).json({
+            total,
+            todo,
+            inProgress,
+            completed
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+
+const getTaskAnalytics = async (req, res) => {
+    try {
+       const userId = new mongoose.Types.ObjectId(req.user.userId);
+
+        const byPriority = await Task.aggregate([
+            {
+                $match: {
+                    user: userId
+                }
+            },
+            {
+                $group: {
+                    _id: "$priority",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const byStatus = await Task.aggregate([
+            {
+                $match: {
+                    user: userId
+                }
+            },
+            {
+                $group: {
+                    _id: "$status",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        res.status(200).json({
+            byPriority,
+            byStatus
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     getTasks,
     getTaskById,
     createTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    getTaskStats,
+    getTaskAnalytics
 };

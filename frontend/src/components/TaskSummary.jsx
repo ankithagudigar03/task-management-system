@@ -1,18 +1,11 @@
-function TaskSummary({ tasks = [] }) {
+function TaskSummary({ taskStats }) {
 
-    const total = tasks.length;
-
-    const todo = tasks.filter(
-        (task) => task.status === "TODO"
-    ).length;
-
-    const inProgress = tasks.filter(
-        (task) => task.status === "IN PROGRESS"
-    ).length;
-
-    const completed = tasks.filter(
-        (task) => task.status === "COMPLETED"
-    ).length;
+    const {
+        total = 0,
+        todo = 0,
+        inProgress = 0,
+        completed = 0
+    } = taskStats || {};
 
     return (
         <div className="task-summary">

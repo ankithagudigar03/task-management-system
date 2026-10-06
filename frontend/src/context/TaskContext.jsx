@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import {
     getTasks,
+    getTaskStats,
     createTask,
     updateTask,
     deleteTask
@@ -14,6 +15,16 @@ const TaskContext = createContext();
 export const TaskProvider = ({ children }) => {
 
     const [tasks, setTasks] = useState([]);
+
+        const [currentPage, setCurrentPage] = useState(1);
+        const [totalPages, setTotalPages] = useState(1);
+        const [totalTasks, setTotalTasks] = useState(0);
+        const [taskStats, setTaskStats] = useState({
+                total: 0,
+                todo: 0,
+                inProgress: 0,
+                completed: 0
+            });
 
     const [loading, setLoading] = useState(false);
 
@@ -45,9 +56,12 @@ export const TaskProvider = ({ children }) => {
             setLoading(true);
             setError("");
 
-            const data = await getTasks(params);
+                const data = await getTasks(params);
 
-            setTasks(data);
+                setTasks(data.tasks);
+                setCurrentPage(data.currentPage);
+                setTotalPages(data.totalPages);
+                setTotalTasks(data.totalTasks);
 
         } catch (err) {
 
@@ -68,6 +82,30 @@ export const TaskProvider = ({ children }) => {
     };
 
 
+
+    // =========================
+// FETCH TASK STATISTICS
+// =========================
+
+const fetchTaskStats = async () => {
+
+    try {
+
+        const data = await getTaskStats();
+
+        setTaskStats(data);
+
+    } catch (err) {
+
+        console.error(
+            "Failed to fetch task statistics:",
+            err
+        );
+
+    }
+};
+
+
     // =========================
     // ADD TASK
     // =========================
@@ -84,6 +122,7 @@ export const TaskProvider = ({ children }) => {
                 ...prevTasks,
                 newTask
             ]);
+            await fetchTaskStats();
 
         } catch (err) {
 
@@ -124,6 +163,8 @@ export const TaskProvider = ({ children }) => {
                 )
             );
 
+            await fetchTaskStats();
+
         } catch (err) {
 
             console.error("Edit task error:", err);
@@ -158,6 +199,8 @@ export const TaskProvider = ({ children }) => {
                 )
             );
 
+            await fetchTaskStats();
+
         } catch (err) {
 
             console.error("Delete task error:", err);
@@ -184,6 +227,7 @@ export const TaskProvider = ({ children }) => {
 
     if (token) {
         fetchTasks();
+        fetchTaskStats();
     }
 
 }, []);
@@ -191,16 +235,21 @@ export const TaskProvider = ({ children }) => {
 
     return (
         <TaskContext.Provider
-            value={{
-                tasks,
-                loading,
-                error,
-                fetchTasks,
-                addTask,
-                editTask,
-                removeTask
-            }}
-        >
+                 value={{
+                    tasks,
+                    loading,
+                    error,
+                    currentPage,
+                    totalPages,
+                    totalTasks,
+                    taskStats,
+                    fetchTasks,
+                    fetchTaskStats,
+                    addTask,
+                    editTask,
+                    removeTask
+                }}
+                        >
             {children}
         </TaskContext.Provider>
     );

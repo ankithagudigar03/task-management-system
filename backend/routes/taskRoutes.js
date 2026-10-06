@@ -5,15 +5,22 @@ const {
     getTaskById,
     createTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    getTaskStats,
+    getTaskAnalytics
 } = require("../controllers/taskController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+
 // Get only logged-in user's tasks
 router.get("/", authMiddleware, getTasks);
+
+router.get("/stats", authMiddleware, getTaskStats);
+
+router.get("/analytics", authMiddleware, getTaskAnalytics);
 
 // Get one task
 router.get("/:id", authMiddleware, getTaskById);

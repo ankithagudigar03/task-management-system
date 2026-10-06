@@ -2,6 +2,9 @@ import "./styles/task.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminRoute from "./components/AdminRoute";
+import Analytics from "./pages/Analytics";
 
 import {
     BrowserRouter,
@@ -50,6 +53,30 @@ function App() {
                     path="*"
                     element={<Navigate to="/" />}
                 />
+
+
+                   <Route
+                            path="/analytics"
+                            element={
+                                <ProtectedRoute>
+                                    <Analytics />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                       <Route
+                            path="/admin"
+                            element={
+                                <AdminRoute>
+                                    <AdminDashboard />
+                                </AdminRoute>
+                            }
+                        />
+
+                        <Route
+                            path="*"
+                            element={<Navigate to="/" />}
+                        />
 
             </Routes>
 
