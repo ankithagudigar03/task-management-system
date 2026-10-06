@@ -180,9 +180,13 @@ export const TaskProvider = ({ children }) => {
 
     useEffect(() => {
 
-        fetchTasks();
+    const token = localStorage.getItem("token");
 
-    }, []);
+    if (token) {
+        fetchTasks();
+    }
+
+}, []);
 
 
     return (

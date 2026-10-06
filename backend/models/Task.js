@@ -8,6 +8,13 @@ const taskSchema = new mongoose.Schema(
             trim: true
         },
 
+        // Owner of the task
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true
+        },
+
         description: {
             type: String,
             trim: true

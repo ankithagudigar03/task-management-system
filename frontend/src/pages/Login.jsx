@@ -45,7 +45,7 @@ function Login() {
 
                 setSuccess("Login successful!");
 
-                navigate("/");
+                window.location.href = "/";
 
         } catch (error) {
 
@@ -93,8 +93,10 @@ function Login() {
                    <div className="input-with-icon">
                         <span className="input-icon mail-icon">✉</span>
 
-                        <input
+                      <input
                             type="email"
+                            name="email"
+                            autoComplete="off"
                             placeholder="Enter your email"
                             value={email}
                             onChange={(event) =>
@@ -139,15 +141,16 @@ function Login() {
                                         fill="white"
                                     />
                                 </svg>
-
-                            <input
-                                type="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(event) =>
-                                    setPassword(event.target.value)
-                                }
-                            />
+                   <input
+                            type="password"
+                            name="password"
+                            autoComplete="new-password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                        />
                         </div>
 
                     </div>

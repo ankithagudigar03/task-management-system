@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUser } from "../services/authApi";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
 
+    const navigate = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -41,6 +43,7 @@ function Register() {
             setName("");
             setEmail("");
             setPassword("");
+            navigate("/login");
 
         } catch (error) {
 
@@ -89,14 +92,16 @@ function Register() {
 
                         <span className="input-icon name-icon">👤</span>
 
-                        <input
-                            type="text"
-                            placeholder="Enter your name"
-                            value={name}
-                            onChange={(event) =>
-                                setName(event.target.value)
-                            }
-                        />
+                   <input
+                        type="text"
+                        name="name"
+                        autoComplete="name"
+                        placeholder="Enter your name"
+                        value={name}
+                        onChange={(event) =>
+                            setName(event.target.value)
+                        }
+                    />
 
                     </div>
 
@@ -110,14 +115,16 @@ function Register() {
 
                         <span className="input-icon mail-icon">✉</span>
 
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(event) =>
-                                setEmail(event.target.value)
-                            }
-                        />
+                      <input
+                        type="email"
+                        name="email"
+                        autoComplete="off"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(event) =>
+                            setEmail(event.target.value)
+                        }
+                    />
 
                     </div>
 
@@ -158,15 +165,16 @@ function Register() {
                                     fill="white"
                                 />
                             </svg>
-
-                            <input
-                                type="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(event) =>
-                                    setPassword(event.target.value)
-                                }
-                            />
+                  <input
+                            type="password"
+                            name="password"
+                            autoComplete="new-password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                        />
 
                         </div>
 

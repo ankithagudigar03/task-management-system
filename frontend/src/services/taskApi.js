@@ -64,17 +64,19 @@ export const getTaskById = async (id) => {
 
 export const createTask = async (task) => {
 
-    const response = await fetch(API_URL, {
+    const response = await fetch(
+        API_URL,
+        {
+            method: "POST",
 
-        method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getToken()}`
+            },
 
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`
-        },
-
-        body: JSON.stringify(task)
-    });
+            body: JSON.stringify(task)
+        }
+    );
 
     if (!response.ok) {
         throw new Error("Failed to create task");
