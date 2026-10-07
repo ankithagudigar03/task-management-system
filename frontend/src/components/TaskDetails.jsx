@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 function TaskDetails({ task, onClose }) {
+    const [isClosing, setIsClosing] = useState(false);
     if (!task) {
         return null;
     }
@@ -149,9 +152,20 @@ function TaskDetails({ task, onClose }) {
             </div>
 <button
     className="close-details"
-    onClick={onClose}
+    onClick={() => {
+        setIsClosing(true);
+        onClose();
+    }}
+    disabled={isClosing}
 >
-    ← Back to Tasks
+    {isClosing ? (
+        <>
+            <span className="submit-spinner"></span>
+            Loading...
+        </>
+    ) : (
+        "← Back to Tasks"
+    )}
 </button>
         </div>
     );

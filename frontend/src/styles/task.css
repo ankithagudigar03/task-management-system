@@ -4273,6 +4273,44 @@ body {
     }
 }
 
+.submit-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    display: inline-block;
+    animation: submitSpin 0.7s linear infinite;
+}
+
+.task-form .form-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.task-form .form-actions button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+@keyframes submitSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 
+.close-details {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.close-details:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 

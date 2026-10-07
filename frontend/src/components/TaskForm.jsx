@@ -5,7 +5,10 @@ function TaskForm({
     onCancelEdit,
     onTaskSaved
 }) {
+
     const { addTask, editTask } = useTaskContext();
+
+const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -49,12 +52,14 @@ function TaskForm({
         }));
     };
 
-  const handleSubmit = async (event) => {
+ const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!formData.title.trim()) {
         return;
     }
+
+    setIsSubmitting(true);
 
     try {
         if (editingTask) {
@@ -73,6 +78,8 @@ function TaskForm({
 
     } catch (error) {
         console.error(error);
+    } finally {
+        setIsSubmitting(false);
     }
 };
 
@@ -200,9 +207,16 @@ function TaskForm({
 
             <div className="form-actions">
 
-                <button type="submit">
-                    {editingTask ? "Update Task" : "Add Task"}
-                </button>
+                  <button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? (
+                            <>
+                                <span className="submit-spinner"></span>
+                                {editingTask ? "Updating..." : "Adding..."}
+                            </>
+                        ) : (
+                            editingTask ? "Update Task" : "Add Task"
+                        )}
+                    </button>
 
     
 
