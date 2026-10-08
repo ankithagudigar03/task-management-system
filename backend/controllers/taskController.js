@@ -1,19 +1,22 @@
 const mongoose = require("mongoose");
 const Task = require("../models/Task");
+const Notification = require("../models/Notification");
 
 // Get all tasks - only logged-in user's tasks
 // Get tasks - only logged-in user's tasks + pagination
 const getTasks = async (req, res) => {
     try {
-        const {
-            search,
-            status,
-            priority,
-            assignedTo,
-            dueDate,
-            page = 1,
-            limit = 12
-        } = req.query;
+            const {
+                    search,
+                    status,
+                    priority,
+                    assignedTo,
+                    dueDate,
+                    dateFilter,
+                    tags,
+                    page = 1,
+                    limit = 12
+                } = req.query;
 
         const currentPage = Math.max(Number(page), 1);
         const tasksPerPage = Math.max(Number(limit), 1);
@@ -54,9 +57,89 @@ const getTasks = async (req, res) => {
             filter.assignedTo = assignedTo;
         }
 
-        if (dueDate) {
-            filter.dueDate = dueDate;
-        }
+       if (dueDate) {
+    filter.dueDate = dueDate;
+}
+
+if (tags) {
+    filter.tags = {
+        $in: [tags]
+    };
+}
+
+      if (dateFilter) {
+        const now = new Date();
+
+    // Start of today
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    // Start of tomorrow
+    const startOfTomorrow = new Date(startOfToday);
+    startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+    // Start of day after tomorrow
+    const startOfDayAfterTomorrow = new Date(startOfTomorrow);
+    startOfDayAfterTomorrow.setDate(
+        startOfDayAfterTomorrow.getDate() + 1
+    );
+
+    if (dateFilter === "TODAY") {
+        filter.dueDate = {
+            $gte: startOfToday,
+            $lt: startOfTomorrow
+        };
+    }
+
+    if (dateFilter === "TOMORROW") {
+        filter.dueDate = {
+            $gte: startOfTomorrow,
+            $lt: startOfDayAfterTomorrow
+        };
+    }
+
+    if (dateFilter === "OVERDUE") {
+        filter.dueDate = {
+            $lt: startOfToday
+        };
+    }
+
+    if (dateFilter === "THIS_WEEK") {
+        const startOfWeek = new Date(startOfToday);
+
+        const day = startOfWeek.getDay();
+
+        // Monday = start of week
+        const daysFromMonday = day === 0 ? 6 : day - 1;
+
+        startOfWeek.setDate(
+            startOfWeek.getDate() - daysFromMonday
+        );
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(
+            endOfWeek.getDate() + 7
+        );
+
+        filter.dueDate = {
+            $gte: startOfWeek,
+            $lt: endOfWeek
+        };
+    }
+
+    if (dateFilter === "NEXT_7_DAYS") {
+        const next7Days = new Date(startOfToday);
+
+        next7Days.setDate(
+            next7Days.getDate() + 8
+        );
+
+        filter.dueDate = {
+            $gte: startOfToday,
+            $lt: next7Days
+        };
+    }
+}
 
         const totalTasks = await Task.countDocuments(filter);
 
@@ -104,6 +187,84 @@ const getTaskById = async (req, res) => {
 };
 
 
+const createTaskNotification = async (task) => {
+    if (!task.user || !task.dueDate) return;
+
+    const now = new Date();
+
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const startOfTomorrow = new Date(startOfToday);
+    startOfTomorrow.setDate(
+        startOfTomorrow.getDate() + 1
+    );
+
+    const startOfDayAfterTomorrow = new Date(startOfTomorrow);
+    startOfDayAfterTomorrow.setDate(
+        startOfDayAfterTomorrow.getDate() + 1
+    );
+
+    const dueDate = new Date(task.dueDate);
+
+    console.log("🔔 Checking notification:", {
+        title: task.title,
+        dueDate: task.dueDate,
+        status: task.status
+    });
+
+    let type;
+    let message;
+
+    // Due tomorrow
+    if (
+        dueDate >= startOfTomorrow &&
+        dueDate < startOfDayAfterTomorrow &&
+        task.status !== "COMPLETED"
+    ) {
+        type = "DUE_TOMORROW";
+        message = `Task "${task.title}" is due tomorrow`;
+    }
+
+    // Due today
+    else if (
+        dueDate >= startOfToday &&
+        dueDate < startOfTomorrow &&
+        task.status !== "COMPLETED"
+    ) {
+        type = "DUE_TODAY";
+        message = `Task "${task.title}" is due today`;
+    }
+
+    // Overdue
+    else if (
+        dueDate < startOfToday &&
+        task.status !== "COMPLETED"
+    ) {
+        type = "OVERDUE";
+        message = `Task "${task.title}" is overdue`;
+    }
+
+    if (!type) return;
+
+    const existingNotification =
+        await Notification.findOne({
+            user: task.user,
+            task: task._id,
+            type
+        });
+
+    if (!existingNotification) {
+        await Notification.create({
+            user: task.user,
+            task: task._id,
+            type,
+            message
+        });
+    }
+};
+
+
 // Create task - automatically assign logged-in user
 const createTask = async (req, res) => {
     try {
@@ -112,6 +273,8 @@ const createTask = async (req, res) => {
             ...req.body,
             user: req.user.userId
         });
+
+        await createTaskNotification(task);
 
         res.status(201).json(task);
 
@@ -123,6 +286,7 @@ const createTask = async (req, res) => {
 };
 
 
+// Update task - only user's own task
 // Update task - only user's own task
 const updateTask = async (req, res) => {
     try {
@@ -144,6 +308,8 @@ const updateTask = async (req, res) => {
                 message: "Task not found"
             });
         }
+
+        await createTaskNotification(task);
 
         res.status(200).json(task);
 

@@ -1,4 +1,4 @@
-function TaskCard({ task, onView, onEdit, onDelete }) {
+function TaskCard({ task, onView, onEdit, onDelete, colorIndex }) {
 
     const handleCardClick = () => {
         onView(task);
@@ -40,9 +40,9 @@ function TaskCard({ task, onView, onEdit, onDelete }) {
 
     return (
         <div
-            className="task-card"
-            onClick={handleCardClick}
-        >
+    className={`task-card task-color-${colorIndex % 6}`}
+    onClick={handleCardClick}
+>
 
             {/* HEADER */}
             <div className="task-card-header">
@@ -113,6 +113,19 @@ function TaskCard({ task, onView, onEdit, onDelete }) {
                             {new Date(
                                 task.dueDate
                             ).toLocaleDateString()}
+                        </span>
+                    </span>
+                )}
+
+
+             {task.tags && task.tags.length > 0 && (
+                    <span>
+                        <span className="info-icon">
+                            🔖
+                        </span>
+
+                        <span>
+                            Tags: {task.tags.join(", ")}
                         </span>
                     </span>
                 )}

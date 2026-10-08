@@ -17,15 +17,16 @@ function TaskList({
     return (
         <div className="task-list">
 
-            {tasks.map((task) => (
-                <TaskCard
-                    key={task._id}
-                    task={task}
-                    onView={onView}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                />
-            ))}
+            {tasks.map((task, index) => (
+    <TaskCard
+        key={task._id}
+        task={task}
+        colorIndex={index}
+        onView={onView}
+        onEdit={onEdit}
+        onDelete={onDelete}
+    />
+))}
 
         </div>
     );

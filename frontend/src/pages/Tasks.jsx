@@ -12,7 +12,7 @@ import { useTaskContext } from "../context/TaskContext";
 import { logoutUser } from "../utils/auth";
 import Analytics from "./Analytics";
 import AdminDashboard from "./AdminDashboard";
-
+import NotificationBell from "../components/NotificationBell";
 
 
 function Tasks() {
@@ -177,7 +177,7 @@ const handlePageChange = (page) => {
 
 
                      <div className="header-actions">
-
+                          <NotificationBell />
 
               {isAdmin && (
                         <button

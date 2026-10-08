@@ -196,3 +196,104 @@ export const getAdminStats = async () => {
 
     return response.json();
 };
+
+
+// =========================
+// GET COMMENTS
+// =========================
+
+export const getComments = async (taskId) => {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/comments/task/${taskId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch comments");
+    }
+
+    return response.json();
+};
+
+
+// =========================
+// CREATE COMMENT
+// =========================
+
+export const createComment = async (taskId, text) => {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/comments/task/${taskId}`,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getToken()}`
+            },
+
+            body: JSON.stringify({
+                text
+            })
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to create comment");
+    }
+
+    return response.json();
+};
+
+
+// =========================
+// DELETE COMMENT
+// =========================
+
+export const deleteComment = async (commentId) => {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/comments/${commentId}`,
+        {
+            method: "DELETE",
+
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to delete comment");
+    }
+
+    return response.json();
+};
+
+export const uploadAttachment = async (taskId, file) => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/attachments/task/${taskId}`,
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            },
+            body: formData
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        console.error("Attachment upload error:", data);
+        throw new Error(data.message || "Failed to upload attachment");
+    }
+
+    return data;
+};

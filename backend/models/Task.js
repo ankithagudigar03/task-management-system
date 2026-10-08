@@ -37,9 +37,32 @@ const taskSchema = new mongoose.Schema(
             trim: true
         },
 
-        dueDate: {
-            type: Date
+          dueDate: {
+                type: Date
+            },
+
+                    tags: {
+                type: [String],
+                default: []
+            },
+
+    attachments: [
+    {
+        fileName: {
+            type: String,
+            required: true
+        },
+        fileUrl: {
+            type: String,
+            required: true
+        },
+        fileType: {
+            type: String
         }
+    }
+]
+
+        
     },
     {
         timestamps: true

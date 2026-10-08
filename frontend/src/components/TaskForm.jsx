@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTaskContext } from "../context/TaskContext";
+import { uploadAttachment } from "../services/taskApi";
 function TaskForm({
     editingTask,
     onCancelEdit,
@@ -9,15 +10,17 @@ function TaskForm({
     const { addTask, editTask } = useTaskContext();
 
 const [isSubmitting, setIsSubmitting] = useState(false);
+const [selectedFile, setSelectedFile] = useState(null);
 
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        status: "TODO",
-        priority: "MEDIUM",
-        assignedTo: "",
-        dueDate: ""
-    });
+   const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    status: "TODO",
+    priority: "MEDIUM",
+    assignedTo: "",
+    dueDate: "",
+    tags: []
+});
 
     useEffect(() => {
         if (editingTask) {
@@ -28,18 +31,20 @@ const [isSubmitting, setIsSubmitting] = useState(false);
                 priority: editingTask.priority || "MEDIUM",
                 assignedTo: editingTask.assignedTo || "",
                 dueDate: editingTask.dueDate
-                    ? editingTask.dueDate.split("T")[0]
-                    : ""
+                            ? editingTask.dueDate.split("T")[0]
+                            : "",
+                        tags: editingTask.tags || []
             });
         } else {
-            setFormData({
-                title: "",
-                description: "",
-                status: "TODO",
-                priority: "MEDIUM",
-                assignedTo: "",
-                dueDate: ""
-            });
+           setFormData({
+                    title: "",
+                    description: "",
+                    status: "TODO",
+                    priority: "MEDIUM",
+                    assignedTo: "",
+                    dueDate: "",
+                    tags: []
+                });
         }
     }, [editingTask]);
 
@@ -62,11 +67,17 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     setIsSubmitting(true);
 
     try {
-        if (editingTask) {
-            await editTask(editingTask._id, formData);
-        } else {
-            await addTask(formData);
-        }
+        let savedTask;
+
+                if (editingTask) {
+                    savedTask = await editTask(editingTask._id, formData);
+                } else {
+                    savedTask = await addTask(formData);
+                }
+
+                if (selectedFile && savedTask?._id) {
+                    await uploadAttachment(savedTask._id, selectedFile);
+                }
 
         // Refresh task list immediately
         if (onTaskSaved) {
@@ -202,6 +213,47 @@ const [isSubmitting, setIsSubmitting] = useState(false);
         onChange={handleChange}
     />
 
+</div>
+
+
+
+<div className="form-group">
+    <label>🔖 Tags</label>
+
+    <input
+        type="text"
+        name="tags"
+        placeholder="Enter tags separated by commas"
+        value={(formData.tags || []).join(", ")}
+        onChange={(event) => {
+            const tags = event.target.value
+                .split(",")
+                .map((tag) => tag.trim())
+                .filter(Boolean);
+
+            setFormData({
+                ...formData,
+                tags
+            });
+        }}
+    />
+</div>
+
+<div className="form-group">
+    <label>📎 Attachment</label>
+
+    <input
+        type="file"
+        onChange={(event) => {
+            setSelectedFile(event.target.files[0] || null);
+        }}
+    />
+
+    {selectedFile && (
+        <p>
+            Selected: {selectedFile.name}
+        </p>
+    )}
 </div>
 
 

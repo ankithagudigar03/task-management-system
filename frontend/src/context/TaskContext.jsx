@@ -106,38 +106,41 @@ const fetchTaskStats = async () => {
 };
 
 
-    // =========================
-    // ADD TASK
-    // =========================
+  // =========================
+// ADD TASK
+// =========================
 
-    const addTask = async (task) => {
+const addTask = async (task) => {
 
-        try {
+    try {
 
-            setError("");
+        setError("");
 
-            const newTask = await createTask(task);
+        const newTask = await createTask(task);
 
-            setTasks((prevTasks) => [
-                ...prevTasks,
-                newTask
+                    setTasks((prevTasks) => [
+                newTask,
+                ...prevTasks
             ]);
-            await fetchTaskStats();
 
-        } catch (err) {
+        await fetchTaskStats();
 
-            console.error("Add task error:", err);
+        return newTask;
 
-            setError(
-                getErrorMessage(
-                    err,
-                    "Unable to add task."
-                )
-            );
+    } catch (err) {
 
-            throw err;
-        }
-    };
+        console.error("Add task error:", err);
+
+        setError(
+            getErrorMessage(
+                err,
+                "Unable to add task."
+            )
+        );
+
+        throw err;
+    }
+};
 
 
     // =========================
@@ -164,6 +167,8 @@ const fetchTaskStats = async () => {
             );
 
             await fetchTaskStats();
+
+            return updatedTask;
 
         } catch (err) {
 
