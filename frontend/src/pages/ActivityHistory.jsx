@@ -6,36 +6,79 @@ function ActivityHistory() {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [deletingId, setDeletingId] = useState(null);
+
+    const fetchActivities = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/activities`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to load activity history");
+            }
+
+            const data = await response.json();
+            setActivities(data);
+            setError("");
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const token = localStorage.getItem("token");
-
-                const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/activities`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error("Failed to load activity history");
-                }
-
-                const data = await response.json();
-                setActivities(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchActivities();
     }, []);
+
+    const handleDelete = async (activityId) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this activity record?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+            setDeletingId(activityId);
+            setError("");
+
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/activities/${activityId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to delete activity"
+                );
+            }
+
+            setActivities((current) =>
+                current.filter((activity) => activity._id !== activityId)
+            );
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
     const getIcon = (action) => {
         switch (action) {
@@ -67,7 +110,7 @@ function ActivityHistory() {
                 <p>No activity recorded yet.</p>
             )}
 
-            {!loading && !error && activities.length > 0 && (
+            {!loading && activities.length > 0 && (
                 <div className="activity-timeline">
                     {activities.map((activity) => (
                         <article
@@ -87,6 +130,18 @@ function ActivityHistory() {
                                     ).toLocaleString()}
                                 </small>
                             </div>
+
+                            <button
+                                type="button"
+                                className="activity-delete-btn"
+                                onClick={() => handleDelete(activity._id)}
+                                disabled={deletingId === activity._id}
+                                aria-label={`Delete activity: ${activity.taskTitle}`}
+                            >
+                                {deletingId === activity._id
+                                    ? "Deleting..."
+                                    : "🗑️ Delete"}
+                            </button>
                         </article>
                     ))}
                 </div>

@@ -5218,3 +5218,46 @@ body {
         gap: 8px;
     }
 }
+
+
+
+.activity-delete-btn {
+    margin-left: auto;
+    padding: 8px 12px;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    background: transparent;
+    color: #dc2626;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.activity-delete-btn:hover {
+    background: #fee2e2;
+}
+
+.activity-delete-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.activity-details {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    .activity-item {
+        flex-wrap: wrap;
+    }
+
+    .activity-delete-btn {
+        margin-left: 44px;
+    }
+}
