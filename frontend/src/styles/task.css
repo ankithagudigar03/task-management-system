@@ -4743,6 +4743,59 @@ body {
 
 
 
+/* ============================= */
+/* Notification Mobile Alignment */
+/* ============================= */
+
+@media (max-width: 600px) {
+    .notification-wrapper {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .notification-bell {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+    }
+
+    .notification-dropdown {
+        position: fixed;
+        top: 75px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: none;
+        max-height: calc(100dvh - 95px);
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    .notification-header {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .notification-header h3 {
+        font-size: 14px;
+    }
+
+    .notification-header button {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .notification-item {
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .notification-content {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
 
 /* ===== Colourful Activity History ===== */
 
