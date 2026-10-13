@@ -6,6 +6,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
 import Analytics from "./pages/Analytics";
 
+
 import {
     BrowserRouter,
     Routes,
@@ -16,6 +17,7 @@ import {
 import { lazy, Suspense } from "react";
 
 import Loading from "./components/Loading";
+import ActivityHistory from "./pages/ActivityHistory";
 
 
 // Lazy loaded page
@@ -49,10 +51,7 @@ function App() {
                         element={<Register />}
                     />
 
-                <Route
-                    path="*"
-                    element={<Navigate to="/" />}
-                />
+                
 
 
                    <Route
@@ -72,6 +71,15 @@ function App() {
                                 </AdminRoute>
                             }
                         />
+
+          <Route
+                    path="/activity-history"
+                    element={
+                        <ProtectedRoute>
+                            <ActivityHistory />
+                        </ProtectedRoute>
+                    }
+                />
 
                         <Route
                             path="*"

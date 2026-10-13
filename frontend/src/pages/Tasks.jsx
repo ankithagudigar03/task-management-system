@@ -13,6 +13,7 @@ import { logoutUser } from "../utils/auth";
 import Analytics from "./Analytics";
 import AdminDashboard from "./AdminDashboard";
 import NotificationBell from "../components/NotificationBell";
+import ActivityHistory from "./ActivityHistory";
 
 
 function Tasks() {
@@ -46,6 +47,7 @@ function Tasks() {
 
     const [queryParams, setQueryParams] = useState({});
     const [pageGroup, setPageGroup] = useState(0);
+    const [showActivityHistory, setShowActivityHistory] = useState(false);
 
 
 
@@ -196,6 +198,17 @@ const handlePageChange = (page) => {
                         📊 Analytics
                     </button>
 
+                         
+                
+                    <button
+                        type="button"
+                        className="activity-history-button"
+                        onClick={() => setShowActivityHistory(true)}
+                    >
+                        🕒 Activity History
+                    </button>
+
+
 
                         <button
                             type="button"
@@ -262,7 +275,45 @@ const handlePageChange = (page) => {
         onFilter={handleFilter}
     />
 
-{loading && tasks.length === 0 && (
+
+
+{/* CATEGORY FILTER */}
+<div className="category-filter-section">
+    
+
+    <div className="category-filter-row">
+        {[
+            { name: "College", icon: "🎓" },
+            { name: "Project", icon: "💻" },
+            { name: "Learning", icon: "📚" },
+            { name: "Personal", icon: "🏠" },
+            { name: "Other", icon: "📌" }
+        ].map((category) => (
+            <button
+                key={category.name}
+                type="button"
+                className={`category-filter-button ${
+                    queryParams.category === category.name ? "active" : ""
+                }`}
+                onClick={() =>
+                    handleFilter({
+                        ...queryParams,
+                        category:
+                            queryParams.category === category.name
+                                ? ""
+                                : category.name
+                    })
+                }
+            >
+                {category.icon} {category.name}
+            </button>
+        ))}
+    </div>
+</div>
+
+
+
+{loading && (
     <div className="loading-state">
 
         <div className="loading-spinner"></div>
@@ -418,15 +469,15 @@ const handlePageChange = (page) => {
                         </button>
 
                         <TaskForm
-    editingTask={null}
-    onCancelEdit={() =>
-        setShowAddTask(false)
-    }
-    onTaskSaved={() =>
-        fetchTasks(queryParams)
-    }
-/>
-                    </div>
+                    editingTask={null}
+                    onCancelEdit={() =>
+                        setShowAddTask(false)
+                    }
+                    onTaskSaved={() =>
+                        fetchTasks(queryParams)
+                    }
+                />
+                                    </div>
 
                 </div>
 
@@ -460,14 +511,14 @@ const handlePageChange = (page) => {
                         </button>
 
                        <TaskForm
-    editingTask={editingTask}
-    onCancelEdit={() =>
-        setEditingTask(null)
-    }
-    onTaskSaved={() =>
-        fetchTasks(queryParams)
-    }
-/>
+                    editingTask={editingTask}
+                    onCancelEdit={() =>
+                        setEditingTask(null)
+                    }
+                    onTaskSaved={() =>
+                        fetchTasks(queryParams)
+                    }
+                />
 
                     </div>
 
@@ -509,6 +560,8 @@ const handlePageChange = (page) => {
             <button
                 className="analytics-close"
                 onClick={() => setShowAnalytics(false)}
+
+                
             >
                 ✕
             </button>
@@ -519,6 +572,22 @@ const handlePageChange = (page) => {
     </div>
 )}
 
+
+{showActivityHistory && (
+    <div className="activity-history-overlay">
+        <div className="activity-history-modal">
+            <button
+                type="button"
+                className="activity-history-close"
+                onClick={() => setShowActivityHistory(false)}
+            >
+                ← Back to Tasks
+            </button>
+
+            <ActivityHistory />
+        </div>
+    </div>
+)}
 
 {showAdmin && (
     <div className="admin-overlay">

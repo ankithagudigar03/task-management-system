@@ -12,11 +12,12 @@ function TaskForm({
 const [isSubmitting, setIsSubmitting] = useState(false);
 const [selectedFile, setSelectedFile] = useState(null);
 
-   const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     title: "",
     description: "",
     status: "TODO",
     priority: "MEDIUM",
+    category: "Other",
     assignedTo: "",
     dueDate: "",
     tags: []
@@ -29,6 +30,7 @@ const [selectedFile, setSelectedFile] = useState(null);
                 description: editingTask.description || "",
                 status: editingTask.status || "TODO",
                 priority: editingTask.priority || "MEDIUM",
+                category: editingTask.category || "Other",
                 assignedTo: editingTask.assignedTo || "",
                 dueDate: editingTask.dueDate
                             ? editingTask.dueDate.split("T")[0]
@@ -41,6 +43,7 @@ const [selectedFile, setSelectedFile] = useState(null);
                     description: "",
                     status: "TODO",
                     priority: "MEDIUM",
+                    category: "Other",
                     assignedTo: "",
                     dueDate: "",
                     tags: []
@@ -180,6 +183,24 @@ const [selectedFile, setSelectedFile] = useState(null);
 </div>
 
 
+{/* TASK CATEGORY */}
+<div className="form-field">
+    <span className="form-field-icon">
+        📁
+    </span>
+
+    <select
+        name="category"
+        value={formData.category}
+        onChange={handleChange}
+    >
+        <option value="College">🎓 College</option>
+        <option value="Project">💻 Project</option>
+        <option value="Learning">📚 Learning</option>
+        <option value="Personal">🏠 Personal</option>
+        <option value="Other">📌 Other</option>
+    </select>
+</div>
 
 <div className="form-field">
     <span className="form-field-icon">👤</span>

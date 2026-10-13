@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
 
 function FilterBar({ onFilter }) {
-   const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState({
     status: "",
     priority: "",
+    category: "",
     assignedTo: "",
     dueDate: "",
     dateFilter: "",
@@ -28,6 +29,7 @@ function FilterBar({ onFilter }) {
         const emptyFilters = {
                 status: "",
                 priority: "",
+                category: "",
                 assignedTo: "",
                 dueDate: "",
                 dateFilter: "",

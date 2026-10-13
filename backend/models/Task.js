@@ -32,6 +32,13 @@ const taskSchema = new mongoose.Schema(
             default: "MEDIUM"
         },
 
+        category: {
+            type: String,
+            enum: ["College", "Project", "Learning", "Personal", "Other"],
+            default: "Other",
+            trim: true
+        },
+
         assignedTo: {
             type: String,
             trim: true
@@ -58,8 +65,11 @@ const taskSchema = new mongoose.Schema(
         },
         fileType: {
             type: String
+     
         }
+        
     }
+
 ]
 
         

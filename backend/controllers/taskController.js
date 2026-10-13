@@ -1,22 +1,24 @@
 const mongoose = require("mongoose");
 const Task = require("../models/Task");
 const Notification = require("../models/Notification");
+const Activity = require("../models/Activity");
 
 // Get all tasks - only logged-in user's tasks
 // Get tasks - only logged-in user's tasks + pagination
 const getTasks = async (req, res) => {
     try {
-            const {
-                    search,
-                    status,
-                    priority,
-                    assignedTo,
-                    dueDate,
-                    dateFilter,
-                    tags,
-                    page = 1,
-                    limit = 12
-                } = req.query;
+                    const {
+                search,
+                status,
+                priority,
+                category,
+                assignedTo,
+                dueDate,
+                dateFilter,
+                tags,
+                page = 1,
+                limit = 12
+            } = req.query;
 
         const currentPage = Math.max(Number(page), 1);
         const tasksPerPage = Math.max(Number(limit), 1);
@@ -51,6 +53,10 @@ const getTasks = async (req, res) => {
 
         if (priority) {
             filter.priority = priority;
+        }
+
+        if (category) {
+    filter.category = category;
         }
 
         if (assignedTo) {
@@ -269,12 +275,21 @@ const createTaskNotification = async (task) => {
 const createTask = async (req, res) => {
     try {
 
-        const task = await Task.create({
+          const task = await Task.create({
             ...req.body,
+            category: req.body.category || "Other",
             user: req.user.userId
         });
 
         await createTaskNotification(task);
+
+        await Activity.create({
+            user: req.user.userId,
+            task: task._id,
+            taskTitle: task.title,
+            action: "CREATED",
+            description: `Created task "${task.title}"`
+        });
 
         res.status(201).json(task);
 
@@ -283,13 +298,27 @@ const createTask = async (req, res) => {
             message: error.message
         });
     }
+
+    
 };
 
 
-// Update task - only user's own task
+
 // Update task - only user's own task
 const updateTask = async (req, res) => {
     try {
+        const existingTask = await Task.findOne({
+            _id: req.params.id,
+            user: req.user.userId
+        });
+
+        if (!existingTask) {
+            return res.status(404).json({
+                message: "Task not found"
+            });
+        }
+
+        const wasCompleted = existingTask.status === "COMPLETED";
 
         const task = await Task.findOneAndUpdate(
             {
@@ -303,13 +332,21 @@ const updateTask = async (req, res) => {
             }
         );
 
-        if (!task) {
-            return res.status(404).json({
-                message: "Task not found"
-            });
-        }
-
         await createTaskNotification(task);
+
+        const isCompleted = task.status === "COMPLETED";
+
+        await Activity.create({
+            user: req.user.userId,
+            task: task._id,
+            taskTitle: task.title,
+            action: !wasCompleted && isCompleted
+                ? "COMPLETED"
+                : "UPDATED",
+            description: !wasCompleted && isCompleted
+                ? `Completed task "${task.title}"`
+                : `Updated task "${task.title}"`
+        });
 
         res.status(200).json(task);
 
@@ -321,10 +358,10 @@ const updateTask = async (req, res) => {
 };
 
 
+
 // Delete task - only user's own task
 const deleteTask = async (req, res) => {
     try {
-
         const task = await Task.findOneAndDelete({
             _id: req.params.id,
             user: req.user.userId
@@ -336,6 +373,14 @@ const deleteTask = async (req, res) => {
             });
         }
 
+        await Activity.create({
+            user: req.user.userId,
+            task: task._id,
+            taskTitle: task.title,
+            action: "DELETED",
+            description: `Deleted task "${task.title}"`
+        });
+
         res.status(200).json({
             message: "Task deleted successfully"
         });
@@ -346,6 +391,7 @@ const deleteTask = async (req, res) => {
         });
     }
 };
+
 
 
 const getTaskStats = async (req, res) => {

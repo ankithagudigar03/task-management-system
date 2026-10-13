@@ -212,6 +212,22 @@ const handleDeleteAttachment = async (attachmentId) => {
                     </div>
                 </div>
 
+                 {/* Task Category */}
+                <div className="detail-item">
+                    <span className="detail-icon">
+                        {task.category === "College" && "🎓"}
+                        {task.category === "Project" && "💻"}
+                        {task.category === "Learning" && "📚"}
+                        {task.category === "Personal" && "🏠"}
+                        {(!task.category || task.category === "Other") && "📌"}
+                    </span>
+
+                    <div>
+                        <strong>Category</strong>
+                        <span>{task.category || "Other"}</span>
+                    </div>
+                </div>
+
                 <div className="detail-item">
                     <span className="detail-icon">
                         📅
