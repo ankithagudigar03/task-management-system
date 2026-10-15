@@ -21,16 +21,19 @@ const activityRoutes = require("./routes/activityRoutes");
 
 
 const app = express();
+
+
 // API Rate Limiter
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 100, // Maximum 100 requests per window
+    limit: 200, // Maximum 200 requests per window
     standardHeaders: "draft-8",
     legacyHeaders: false,
     message: {
         message: "Too many requests. Please try again later."
     }
 });
+
 
 // Middleware
 app.use(cors());

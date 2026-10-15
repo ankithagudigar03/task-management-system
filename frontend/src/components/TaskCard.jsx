@@ -102,20 +102,21 @@ function TaskCard({ task, onView, onEdit, onDelete, colorIndex }) {
                 </span>
 
 
-                {/* TASK CATEGORY */}
-                <span>
-                    <span className="info-icon">
-                        {task.category === "College" && "🎓"}
-                        {task.category === "Project" && "💻"}
-                        {task.category === "Learning" && "📚"}
-                        {task.category === "Personal" && "🏠"}
-                        {(!task.category || task.category === "Other") && "📌"}
-                    </span>
+{/* TASK CATEGORY */}
+<span>
+    <span className="info-icon">
+        {task.category === "College" && "🎓"}
+        {task.category === "Project" && "💻"}
+        {task.category === "Learning" && "📚"}
+        {task.category === "Personal" && "🏠"}
+        {task.category === "Other" && "📌"}
+    </span>
 
-                    <span>
-                        Category: {task.category || "Other"}
-                    </span>
-                </span>
+    <span>
+        Category: {task.category || "Not selected"}
+    </span>
+</span>
+
 
                 {task.dueDate && (
                     <span>

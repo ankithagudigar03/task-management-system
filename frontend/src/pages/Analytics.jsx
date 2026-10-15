@@ -164,34 +164,45 @@ function Analytics() {
 
                     <div className="chart-container">
                         <ResponsiveContainer width="100%" height={320}>
-                            <PieChart>
-                                <Pie
-                                    data={statusData}
-                                    dataKey="count"
-                                    nameKey="name"
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={105}
-                                    innerRadius={55}
-                                    paddingAngle={3}
-                                >
-                                    {statusData.map((entry, index) => (
-                                        <Cell
-                                            key={`cell-${index}`}
-                                            fill={
-                                                [
-                                                    "#5665df",
-                                                    "#f59e0b",
-                                                    "#22c55e"
-                                                ][index % 3]
-                                            }
-                                        />
-                                    ))}
-                                </Pie>
+                           
+                        <PieChart margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
+                            <Pie
+                                data={statusData}
+                                dataKey="count"
+                                nameKey="name"
+                                cx="50%"
+                                cy="43%"
+                                outerRadius={100}
+                                innerRadius={55}
+                                paddingAngle={3}
+                            >
+                                {statusData.map((entry, index) => (
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={
+                                            [
+                                                "#5665df",
+                                                "#f59e0b",
+                                                "#22c55e"
+                                            ][index % 3]
+                                        }
+                                    />
+                                ))}
+                            </Pie>
 
-                                <Tooltip />
-                                <Legend />
-                            </PieChart>
+                            <Tooltip />
+
+                            <Legend
+                                verticalAlign="bottom"
+                                align="center"
+                                height={32}
+                                wrapperStyle={{
+                                    fontSize: "13px",
+                                    paddingTop: "4px"
+                                }}
+                            />
+                        </PieChart>
+
                         </ResponsiveContainer>
                     </div>
                 </div>

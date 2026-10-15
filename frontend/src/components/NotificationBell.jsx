@@ -21,12 +21,14 @@ function NotificationBell() {
         }
     };
 
-  useEffect(() => {
+ useEffect(() => {
     loadNotifications();
 
     const interval = setInterval(() => {
-        loadNotifications();
-    }, 5000);
+        if (document.visibilityState === "visible") {
+            loadNotifications();
+        }
+    }, 60000);
 
     return () => clearInterval(interval);
 }, []);

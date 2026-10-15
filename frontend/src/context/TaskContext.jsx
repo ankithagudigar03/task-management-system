@@ -188,38 +188,39 @@ const addTask = async (task) => {
 
     // =========================
     // DELETE TASK
-    // =========================
 
-    const removeTask = async (id) => {
 
-        try {
+const removeTask = async (id) => {
+    try {
+        setError("");
 
-            setError("");
+        await deleteTask(id);
 
-            await deleteTask(id);
+        const updatedTasks = tasks.filter(
+            (item) => item._id !== id
+        );
 
-            setTasks((prevTasks) =>
-                prevTasks.filter(
-                    (item) => item._id !== id
-                )
-            );
+        await fetchTaskStats();
 
-            await fetchTaskStats();
-
-        } catch (err) {
-
-            console.error("Delete task error:", err);
-
-            setError(
-                getErrorMessage(
-                    err,
-                    "Unable to delete task."
-                )
-            );
-
-            throw err;
+        if (updatedTasks.length === 0 && currentPage > 1) {
+            await fetchTasks({ page: 1 });
+        } else {
+            setTasks(updatedTasks);
         }
-    };
+    } catch (err) {
+        console.error("Delete task error:", err);
+
+        setError(
+            getErrorMessage(err, "Unable to delete task.")
+        );
+
+        throw err;
+    }
+};
+
+
+
+
 
 
     // =========================

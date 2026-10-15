@@ -129,8 +129,8 @@ const handlePageChange = (page) => {
     };
 
 
-    const handleDelete = async (id) => {
-
+   
+const handleDelete = async (id) => {
     const confirmed = window.confirm(
         "Are you sure you want to delete this task?"
     );
@@ -142,17 +142,31 @@ const handlePageChange = (page) => {
     try {
         await removeTask(id);
 
-        // Refresh the current filtered/search results
-        await fetchTasks(queryParams);
-
         if (selectedTask?._id === id) {
             setSelectedTask(null);
         }
 
+        const updatedTasks = tasks.filter(
+            (task) => task._id !== id
+        );
+
+        if (updatedTasks.length === 0 && currentPage > 1) {
+            const updatedParams = {
+                ...queryParams,
+                page: 1
+            };
+
+            setPageGroup(0);
+            setQueryParams(updatedParams);
+            await fetchTasks(updatedParams);
+        } else {
+            await fetchTasks(queryParams);
+        }
     } catch (error) {
-        console.error(error);
+        console.error("Delete task error:", error);
     }
 };
+
 
     return (
         <div className="tasks-page">
@@ -164,18 +178,34 @@ const handlePageChange = (page) => {
 
                 <div className="minimal-header-content">
 
-                    <div className="brand">
+      
+<div
+    className="brand"
+    role="button"
+    tabIndex={0}
+    title="Refresh tasks"
+    onClick={() => {
+        fetchTasks(queryParams);
+        fetchTaskStats();
+    }}
+    onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            fetchTasks(queryParams);
+            fetchTaskStats();
+        }
+    }}
+>
+    <div className="brand-icon">
+        <img src="/task-header.png" alt="My Tasks" />
+    </div>
 
-                        <div className="brand-icon">
-                    <img src="/task-header.png" alt="My Tasks" />
-                </div>
+    <div>
+        <h1>My Tasks</h1>
+        <p>Stay organized and get more done</p>
+    </div>
+</div>
 
-                        <div>
-                            <h1>My Tasks</h1>
-                            <p>Stay organized and get more done</p>
-                        </div>
-
-                    </div>
 
 
                      <div className="header-actions">
@@ -218,41 +248,12 @@ const handlePageChange = (page) => {
                             + Add Task
                         </button>
 
-                        <button
+   <button
     type="button"
     className="logout-button"
     onClick={handleLogout}
 >
-    <svg
-        className="logout-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-    >
-        <path
-            d="M10 17L15 12L10 7"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
-
-        <path
-            d="M15 12H3"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-        />
-
-        <path
-            d="M21 3V21"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-        />
-    </svg>
-
-    Logout
+    → Logout
 </button>
 
                     </div>
@@ -280,7 +281,6 @@ const handlePageChange = (page) => {
 {/* CATEGORY FILTER */}
 <div className="category-filter-section">
     
-
     <div className="category-filter-row">
         {[
             { name: "College", icon: "🎓" },
@@ -573,9 +573,16 @@ const handlePageChange = (page) => {
 )}
 
 
+
 {showActivityHistory && (
-    <div className="activity-history-overlay">
-        <div className="activity-history-modal">
+    <div
+        className="activity-history-overlay"
+        onClick={() => setShowActivityHistory(false)}
+    >
+        <div
+            className="activity-history-modal"
+            onClick={(event) => event.stopPropagation()}
+        >
             <button
                 type="button"
                 className="activity-history-close"
@@ -588,6 +595,7 @@ const handlePageChange = (page) => {
         </div>
     </div>
 )}
+
 
 {showAdmin && (
     <div className="admin-overlay">

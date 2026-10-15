@@ -17,7 +17,7 @@ const [selectedFile, setSelectedFile] = useState(null);
     description: "",
     status: "TODO",
     priority: "MEDIUM",
-    category: "Other",
+    category: "",
     assignedTo: "",
     dueDate: "",
     tags: []
@@ -30,7 +30,7 @@ const [selectedFile, setSelectedFile] = useState(null);
                 description: editingTask.description || "",
                 status: editingTask.status || "TODO",
                 priority: editingTask.priority || "MEDIUM",
-                category: editingTask.category || "Other",
+                category: editingTask.category || "",
                 assignedTo: editingTask.assignedTo || "",
                 dueDate: editingTask.dueDate
                             ? editingTask.dueDate.split("T")[0]
@@ -43,7 +43,7 @@ const [selectedFile, setSelectedFile] = useState(null);
                     description: "",
                     status: "TODO",
                     priority: "MEDIUM",
-                    category: "Other",
+                    category: "",
                     assignedTo: "",
                     dueDate: "",
                     tags: []
@@ -183,6 +183,7 @@ const [selectedFile, setSelectedFile] = useState(null);
 </div>
 
 
+
 {/* TASK CATEGORY */}
 <div className="form-field">
     <span className="form-field-icon">
@@ -193,7 +194,11 @@ const [selectedFile, setSelectedFile] = useState(null);
         name="category"
         value={formData.category}
         onChange={handleChange}
+        required
     >
+        <option value="" disabled>
+            Select Category
+        </option>
         <option value="College">🎓 College</option>
         <option value="Project">💻 Project</option>
         <option value="Learning">📚 Learning</option>
@@ -201,6 +206,7 @@ const [selectedFile, setSelectedFile] = useState(null);
         <option value="Other">📌 Other</option>
     </select>
 </div>
+
 
 <div className="form-field">
     <span className="form-field-icon">👤</span>
